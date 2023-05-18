@@ -10,5 +10,6 @@ int main() {
     chacha20_test_a1_block_vectors();
     chacha20_test_a2_encrypt_vectors();
     poly1305_test_a3_msg_vectors();
+    poly1305_test_a4_keygens();
     return 0;
 }

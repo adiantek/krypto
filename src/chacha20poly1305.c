@@ -2,8 +2,9 @@
 #include <chacha20poly1305.h>
 #include <poly1305.h>
 #include <stdio.h>
-#include <utils.h>
 #include <stdlib.h>
+#include <string.h>
+#include <utils.h>
 
 // #define CHACHA20_POLY1305_DEBUG
 
@@ -36,7 +37,6 @@ void poly1305_key_test() {
     print_msg(out, 32);
     printf("\n");
 }
-
 
 void chacha20_aead_encrypt(uint8_t *aad, size_t aad_len, uint8_t key[32],
                            uint8_t iv[8], uint32_t constant,
@@ -77,7 +77,7 @@ void chacha20_aead_encrypt(uint8_t *aad, size_t aad_len, uint8_t key[32],
         *d++ = plaintext[i];
     for (size_t i = 0; i < plaintext_padding; i++)
         *d++ = 0;
-    
+
     uint64_t *mac64 = (uint64_t *)d;
     *mac64++ = aad_len;
     *mac64++ = plaintext_len;
@@ -104,7 +104,6 @@ void chacha20_aead_test() {
     uint8_t iv[8] = "\x40\x41\x42\x43\x44\x45\x46\x47";
     uint32_t constant = 0x00000007;
 
-    
     printf("Plaintext:\n");
     print_msg(plaintext, plaintext_length);
     printf("AAD:\n");
@@ -122,4 +121,41 @@ void chacha20_aead_test() {
 
     printf("Tag:\n");
     print_msg(tag, 16);
+}
+
+void poly1305_test_a4_keygen(size_t id, uint8_t key[32], uint8_t nonce[12]) {
+    uint8_t key_rw[32];
+    memcpy(key_rw, key, 32);
+
+    printf("Test Vector #%ld:\n", id);
+    printf("==============\n");
+    printf("\n");
+    printf("The key:\n");
+    print_msg(key_rw, 32);
+    printf("\n");
+    printf("The nonce:\n");
+    print_msg(nonce, 12);
+    printf("\n");
+
+    uint8_t out[32];
+    poly1305_key_gen(out, key_rw, nonce);
+    printf("Poly1305 one-time key:\n");
+    print_msg(out, 32);
+    printf("\n");
+    printf("\n");
+}
+
+void poly1305_test_a4_keygens() {
+    poly1305_test_a4_keygen(1,
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
+    poly1305_test_a4_keygen(2,
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02");
+    poly1305_test_a4_keygen(3,
+                            "\x1c\x92\x40\xa5\xeb\x55\xd3\x8a\xf3\x33\x88\x86\x04\xf6\xb5\xf0"
+                            "\x47\x39\x17\xc1\x40\x2b\x80\x09\x9d\xca\x5c\xbc\x20\x70\x75\xc0",
+                            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02");
 }
