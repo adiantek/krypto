@@ -12,7 +12,8 @@ void chacha20_counter_decrement(uint8_t nonce[12], uint32_t *counter);
 void chacha20_counter(uint32_t state[16]);
 void chacha20_encrypt(uint8_t key[32], uint8_t nonce[12], uint32_t *counter, uint8_t *position, uint8_t *plaintext, size_t l);
 void chacha20_test();
-void chacha20_test_block_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter);
-void chacha20_test_block_vectors();
-void chacha20_test_encrypt_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter, uint8_t *plaintext, size_t l);
-void chacha20_test_encrypt_vectors();
+
+void chacha20_test_a1_block_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter);
+void chacha20_test_a1_block_vectors();
+void chacha20_test_a2_encrypt_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter, uint8_t *plaintext, size_t l);
+void chacha20_test_a2_encrypt_vectors();

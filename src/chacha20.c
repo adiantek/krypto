@@ -1,8 +1,8 @@
 #include <chacha20.h>
 #include <stdio.h>
-#include <utils.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <utils.h>
 
 // #define CHACHA20_DEBUG
 
@@ -125,7 +125,7 @@ void chacha20_test() {
     printf("\n");
 }
 
-void chacha20_test_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter) {
+void chacha20_test_a1_block_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter) {
     printf("Test Vector #%ld:\n", id);
     printf("==============\n");
     printf("\n");
@@ -148,35 +148,35 @@ void chacha20_test_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_
     printf("\n");
 }
 
-void chacha20_test_vectors() {
-    chacha20_test_vector(1,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         0);
-    chacha20_test_vector(2,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         1);
-    chacha20_test_vector(3,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         1);
-    chacha20_test_vector(4,
-                         "\x00\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         2);
-    chacha20_test_vector(5,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
-                         0);
+void chacha20_test_a1_block_vectors() {
+    chacha20_test_a1_block_vector(1,
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  0);
+    chacha20_test_a1_block_vector(2,
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  1);
+    chacha20_test_a1_block_vector(3,
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  1);
+    chacha20_test_a1_block_vector(4,
+                                  "\x00\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  2);
+    chacha20_test_a1_block_vector(5,
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+                                  0);
 }
 
-void chacha20_test_encrypt_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter, uint8_t *plaintext, size_t l) {
+void chacha20_test_a2_encrypt_vector(size_t id, uint8_t key[32], uint8_t nonce[12], uint32_t counter, uint8_t *plaintext, size_t l) {
     printf("Test Vector #%ld:\n", id);
     printf("==============\n");
     printf("\n");
@@ -209,36 +209,36 @@ void chacha20_test_encrypt_vector(size_t id, uint8_t key[32], uint8_t nonce[12],
     printf("\n");
 }
 
-void chacha20_test_encrypt_vectors() {
-    chacha20_test_encrypt_vector(1,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         0,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-                         64);
-    chacha20_test_encrypt_vector(2,
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
-                         1,
-                         "Any submission to the IETF intended by the Contributor for publi"
-                         "cation as all or part of an IETF Internet-Draft or RFC and any s"
-                         "tatement made within the context of an IETF activity is consider"
-                         "ed an \"IETF Contribution\". Such statements include oral statem"
-                         "ents in IETF sessions, as well as written and electronic communi"
-                         "cations made at any time or place, which are addressed to",
-                         375);
-    chacha20_test_encrypt_vector(3,
-                         "\x1c\x92\x40\xa5\xeb\x55\xd3\x8a\xf3\x33\x88\x86\x04\xf6\xb5\xf0"
-                         "\x47\x39\x17\xc1\x40\x2b\x80\x09\x9d\xca\x5c\xbc\x20\x70\x75\xc0",
-                         "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
-                         42,
-                         "'Twas brillig, and the slithy toves.Did gyre and gimble in the w"
-                         "abe:.All mimsy were the borogoves,\nAnd the mome raths outgrabe.",
-                         127);
-
+void chacha20_test_a2_encrypt_vectors() {
+    chacha20_test_a2_encrypt_vector(1,
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                    0,
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                                    64);
+    chacha20_test_a2_encrypt_vector(2,
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+                                    1,
+                                    "Any submission to the IETF intended by the Contributor for publi"
+                                    "cation as all or part of an IETF Internet-Draft or RFC and any s"
+                                    "tatement made within the context of an IETF activity is consider"
+                                    "ed an \"IETF Contribution\". Such statements include oral statem"
+                                    "ents in IETF sessions, as well as written and electronic communi"
+                                    "cations made at any time or place, which are addressed to",
+                                    375);
+    chacha20_test_a2_encrypt_vector(3,
+                                    "\x1c\x92\x40\xa5\xeb\x55\xd3\x8a\xf3\x33\x88\x86\x04\xf6\xb5\xf0"
+                                    "\x47\x39\x17\xc1\x40\x2b\x80\x09\x9d\xca\x5c\xbc\x20\x70\x75\xc0",
+                                    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02",
+                                    42,
+                                    "'Twas brillig, and the slithy toves\nDid gyre and gimble in the "
+                                    "wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrab"
+                                    "e.",
+                                    127);
 }
