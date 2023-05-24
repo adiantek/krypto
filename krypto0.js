@@ -252,32 +252,46 @@ let allIntervals = [];
 
 let fileInputE = new Uint8Array();
 let fileNameE = "";
-document.getElementById('filefe').addEventListener("change", function (e) {
-    if (e.target.files.length == 0) return;
-    const reader = new FileReader();
-    const n = e.target.files[0].name;
-    reader.onload = function () {
-        fileInputE = new Uint8Array(reader.result);
-        fileNameE = n;
-        document.getElementById("filesizefe").value = fileInputE.length;
-    }
-    reader.readAsArrayBuffer(e.target.files[0]);
-});
-
 let fileInputD = new Uint8Array();
 let fileNameD = "";
-document.getElementById('filefd').addEventListener("change", function (e) {
-    if (e.target.files.length == 0) return;
-    const reader = new FileReader();
-    const n = e.target.files[0].name;
-    reader.onload = function () {
-        fileInputD = new Uint8Array(reader.result);
-        fileNameD = n;
-        document.getElementById("filesizefd").value = fileInputD.length;
-    }
-    reader.readAsArrayBuffer(e.target.files[0]);
-});
+{
+    const filefe = document.getElementById('filefe');
+    const filefd = document.getElementById('filefd');
+    const filefeSize = document.getElementById('filesizefe');
+    const filefdSize = document.getElementById('filesizefd');
+    filefeSize.addEventListener("click", function (e) {
+        filefe.click();
+    });
+    filefdSize.addEventListener("click", function (e) {
+        filefd.click();
+    });
+    filefe.addEventListener("change", function (e) {
+        if (e.target.files.length == 0) return;
+        const reader = new FileReader();
+        const n = e.target.files[0].name;
+        reader.onload = function () {
+            fileInputE = new Uint8Array(reader.result);
+            fileNameE = n;
+            filefeSize.value = `${fileNameE} \u2013 ${fileInputE.length} byte(s) \u2013 Click here to select another file`;
+            filefe.value = "";
+        }
+        reader.readAsArrayBuffer(e.target.files[0]);
+    });
 
+    filefd.addEventListener("change", function (e) {
+        if (e.target.files.length == 0) return;
+        const reader = new FileReader();
+        const n = e.target.files[0].name;
+        reader.onload = function () {
+            fileInputD = new Uint8Array(reader.result);
+            fileNameD = n;
+            filefdSize.value = `${fileNameD} \u2013 ${fileInputD.length} byte(s) \u2013 Click here to select another file`;
+            filefd.value = "";
+        }
+        reader.readAsArrayBuffer(e.target.files[0]);
+    });
+    
+}
 
 let globalValues = {};
 
