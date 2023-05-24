@@ -499,13 +499,13 @@ function loadValues(id, max) {
             globalValues[id] = Uint8Array.from(raw.value, c => c.charCodeAt(0));
 
             b64.value = btoa(raw.value);
-            hex.value = formatHex([...globalValues[id]].map(c => c.charCodeAt(0).toString(16).padStart(2, "0")).join(""), max);
+            hex.value = formatHex([...globalValues[id]].map(c => c.toString(16).padStart(2, "0")).join(""), max);
         } else if (values[1] !== b64.value) {
             try {
                 globalValues[id] = Uint8Array.from(atob(b64.value), c => c.charCodeAt(0));
 
                 raw.value = filterVal(atob(b64.value));
-                hex.value = formatHex([...globalValues[id]].map(c => c.charCodeAt(0).toString(16).padStart(2, "0")).join(""), max);
+                hex.value = formatHex([...globalValues[id]].map(c => c.toString(16).padStart(2, "0")).join(""), max);
             } catch (e) {
             }
         } else if (values[2] !== hex.value) {
