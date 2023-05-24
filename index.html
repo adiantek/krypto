@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation RFC 7539</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <style>
+        .hex {
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .hex span {
+            margin-left: 1em;
+            margin-right: 1em;
+        }
+        h1 {
+            margin-top: 2em;
+        }
+        body {
+            margin-bottom: 2em;
+        }
+        input {
+            font-family: monospace;
+        }
+        button {
+            margin-top: 0.4rem;
+            margin-bottom: 0.4rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>ChaCha20-Poly1305 AEAD File Encryption</h1>
+        <h3>Input:</h3>
+        <form>
+            <div class="row mb-3">
+                <label for="keyfeb64" class="col-sm-2 col-form-label">Key (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyfeb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyfehex" class="col-sm-2 col-form-label">Key (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyfehex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyfe" class="col-sm-2 col-form-label">Key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyfe">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncefeb64" class="col-sm-2 col-form-label">Nonce (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncefeb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncefehex" class="col-sm-2 col-form-label">Nonce (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncefehex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncefe" class="col-sm-2 col-form-label">Nonce:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncefe">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="aadfeb64" class="col-sm-2 col-form-label">AAD (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="aadfeb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="aadfehex" class="col-sm-2 col-form-label">AAD (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="aadfehex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="aadfe" class="col-sm-2 col-form-label">AAD:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="aadfe">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="filefe" class="col-sm-2 col-form-label">File:</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" id="filefe">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="filefe" class="col-sm-2 col-form-label">File size in bytes:</label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control" id="filesizefe" value="0">
+                </div>
+            </div>
+        </form>
+        <h3>Output:</h3>
+        <button type="button" class="btn btn-outline-primary" id="download1">Download encrypted without tag</button>
+        <button type="button" class="btn btn-outline-primary" id="download2">Download encrypted with tag at the beginning</button>
+        <button type="button" class="btn btn-outline-primary" id="download3">Download encrypted with tag at the end</button>
+        <h4>Computed tag:</h4>
+        <div id="tagfe" class="hex"></div>
+
+
+        
+        <h1>ChaCha20-Poly1305 AEAD File Decryption</h1>
+        <h3>Input:</h3>
+        <form>
+            <div class="row mb-3">
+                <label for="keyfdb64" class="col-sm-2 col-form-label">Key (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyfdb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyfdhex" class="col-sm-2 col-form-label">Key (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyfdhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyfd" class="col-sm-2 col-form-label">Key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyfd">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncefdb64" class="col-sm-2 col-form-label">Nonce (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncefdb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncefdhex" class="col-sm-2 col-form-label">Nonce (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncefdhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncefd" class="col-sm-2 col-form-label">Nonce:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncefd">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="aadfdb64" class="col-sm-2 col-form-label">AAD (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="aadfdb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="aadfdhex" class="col-sm-2 col-form-label">AAD (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="aadfdhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="aadfd" class="col-sm-2 col-form-label">AAD:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="aadfd">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="filefd" class="col-sm-2 col-form-label">File:</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" id="filefd">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="filefd" class="col-sm-2 col-form-label">File size in bytes:</label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control" id="filesizefd" value="0">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="tagfd" class="col-sm-2 col-form-label">Tag location:</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="tagfd">
+                        <option value="0">At the beginning</option>
+                        <option value="1">At the end</option>
+                        <option value="2">Nowhere</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+        <h3>Output:</h3>
+        <button type="button" class="btn btn-outline-primary" id="download4">Download decrypted</button>
+        <h4>Computed tag:</h4>
+        <div id="tagfd0" class="hex"></div>
+        <h4>Tag in file:</h4>
+        <div id="tagfd1" class="hex"></div>
+        <img style="max-width: 800px; max-height: 600px" id="decimg">
+
+
+        <h1>The ChaCha20 Block Functions</h1>
+        <h3>Input:</h3>
+        <form>
+            <div class="row mb-3">
+                <label for="keyb64" class="col-sm-2 col-form-label">Key (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyhex" class="col-sm-2 col-form-label">Key (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="key" class="col-sm-2 col-form-label">Key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="key">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceb64" class="col-sm-2 col-form-label">Nonce (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="noncehex" class="col-sm-2 col-form-label">Nonce (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="noncehex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonce" class="col-sm-2 col-form-label">Nonce:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonce">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="counter" class="col-sm-2 col-form-label">Counter:</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="counter">
+                </div>
+            </div>
+        </form>
+        <button type="button" class="btn btn-outline-primary" id="a11">Test Vector #1</button>
+        <button type="button" class="btn btn-outline-primary" id="a12">Test Vector #2</button>
+        <button type="button" class="btn btn-outline-primary" id="a13">Test Vector #3</button>
+        <button type="button" class="btn btn-outline-primary" id="a14">Test Vector #4</button>
+        <button type="button" class="btn btn-outline-primary" id="a15">Test Vector #5</button>
+        <h3>Output:</h3>
+        <div id="chacha20block" class="hex"></div>
+
+        <h1>ChaCha20 Encryption</h1>
+        <h3>Input:</h3>
+        <form>
+            <div class="row mb-3">
+                <label for="keyEb64" class="col-sm-2 col-form-label">Key (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyEb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyEhex" class="col-sm-2 col-form-label">Key (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyEhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyE" class="col-sm-2 col-form-label">Key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyE">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceEb64" class="col-sm-2 col-form-label">Nonce (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceEb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceEhex" class="col-sm-2 col-form-label">Nonce (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceEhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceE" class="col-sm-2 col-form-label">Nonce:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceE">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="counterE" class="col-sm-2 col-form-label">Counter:</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="counterE">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="plaintextb64" class="col-sm-2 col-form-label">Plaintext (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="plaintextb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="plaintexthex" class="col-sm-2 col-form-label">Plaintext (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="plaintexthex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="plaintext" class="col-sm-2 col-form-label">Plaintext:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="plaintext">
+                </div>
+            </div>
+        </form>
+        <button type="button" class="btn btn-outline-primary" id="a21">Test Vector #1</button>
+        <button type="button" class="btn btn-outline-primary" id="a22">Test Vector #2</button>
+        <button type="button" class="btn btn-outline-primary" id="a23">Test Vector #3</button>
+        <h3>Formatted plaintext input:</h3>
+        <div id="chacha20encinp" class="hex"></div>
+        <h3>Output:</h3>
+        <div id="chacha20enc" class="hex"></div>
+
+        <h1>Poly1305 Message Authentication Code</h1>
+        <h3>Input:</h3>
+        <form>
+            <div class="row mb-3">
+                <label for="keyPb64" class="col-sm-2 col-form-label">Key (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyPb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyPhex" class="col-sm-2 col-form-label">Key (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyPhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyP" class="col-sm-2 col-form-label">Key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyP">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="macb64" class="col-sm-2 col-form-label">Text to MAC (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="macb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="machex" class="col-sm-2 col-form-label">Text to MAC (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="machex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="mac" class="col-sm-2 col-form-label">Text to MAC:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="mac">
+                </div>
+            </div>
+        </form>
+        <button type="button" class="btn btn-outline-primary" id="a31">Test Vector #1</button>
+        <button type="button" class="btn btn-outline-primary" id="a32">Test Vector #2</button>
+        <button type="button" class="btn btn-outline-primary" id="a33">Test Vector #3</button>
+        <button type="button" class="btn btn-outline-primary" id="a34">Test Vector #4</button>
+        <button type="button" class="btn btn-outline-primary" id="a35">Test Vector #5</button>
+        <button type="button" class="btn btn-outline-primary" id="a36">Test Vector #6</button>
+        <button type="button" class="btn btn-outline-primary" id="a37">Test Vector #7</button>
+        <button type="button" class="btn btn-outline-primary" id="a38">Test Vector #8</button>
+        <button type="button" class="btn btn-outline-primary" id="a39">Test Vector #9</button>
+        <button type="button" class="btn btn-outline-primary" id="a310">Test Vector #10</button>
+        <button type="button" class="btn btn-outline-primary" id="a311">Test Vector #11</button>
+        <div id="poly1305macinp" class="hex"></div>
+        <h3>Output:</h3>
+        <div id="poly1305mac" class="hex"></div>
+
+        <h1>Poly1305 Key Generation Using ChaCha20</h1>
+        <h3>Input:</h3>
+        <form>
+            <div class="row mb-3">
+                <label for="keyKb64" class="col-sm-2 col-form-label">Key (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyKb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyKhex" class="col-sm-2 col-form-label">Key (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyKhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="keyK" class="col-sm-2 col-form-label">Key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keyK">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceKb64" class="col-sm-2 col-form-label">Nonce (base64):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceKb64">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceKhex" class="col-sm-2 col-form-label">Nonce (hex):</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceKhex">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="nonceK" class="col-sm-2 col-form-label">Nonce:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nonceK">
+                </div>
+            </div>
+        </form>
+        <button type="button" class="btn btn-outline-primary" id="a41">Test Vector #1</button>
+        <button type="button" class="btn btn-outline-primary" id="a42">Test Vector #2</button>
+        <button type="button" class="btn btn-outline-primary" id="a43">Test Vector #3</button>
+        <h3>Output:</h3>
+        <div id="poly1305key" class="hex"></div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="krypto.js"></script>
+    <script src="krypto0.js"></script>
+</body>
+
+</html>
